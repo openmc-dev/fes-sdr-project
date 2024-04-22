@@ -22,7 +22,7 @@ for z0, z1 in zip(z_planes[:-1], z_planes[1:]):
     mat.set_density('g/cm3', 8.0)
     mat.add_element('Fe', 1.0)
     mat.depletable = True
-    mat.volume = 5. * 5.* 2 * w/n
+    mat.volume = 5. * 5.* 2 * w
     cell.fill = mat
     activation_cells.append(cell)
 
@@ -57,7 +57,7 @@ model.export_to_model_xml('model_neutron.xml')
 
 # Set up mesh for activation
 mesh = openmc.RegularMesh()
-mesh.lower_left = (-2.5, -2.5, 0.0)
+mesh.lower_left = (-2.5, -2.5, -w)
 mesh.upper_right = (2.5, 2.5, w)
 mesh.dimension = (1, 1, n)
 

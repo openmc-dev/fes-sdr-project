@@ -52,7 +52,7 @@ model.settings.particles = 100_000
 model.settings.batches = 10
 model.settings.run_mode = 'fixed source'
 model.settings.source = openmc.IndependentSource(
-    space=openmc.stats.Point((0., 0., -5.0)),
+    space=openmc.stats.Point((0., 0., -w - 1)),
     energy=openmc.stats.Discrete([14.0e6], [1.0])
 )
 model.export_to_model_xml('model_neutron.xml')
