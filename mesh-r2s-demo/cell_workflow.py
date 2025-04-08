@@ -1,10 +1,10 @@
+from pathlib import Path
 import openmc
-import openmc.model
 import openmc.deplete
 import numpy as np
 import pandas as pd
 
-openmc.config['chain_file'] = 'chain_fe.xml'
+openmc.config['chain_file'] = Path('chain_fe.xml').resolve()
 
 results_dict = {f'det_{i}': [] for i in range(6)}
 
@@ -63,8 +63,8 @@ for n in range(1, 11):
 
     fluxes, micros = openmc.deplete.get_microxs_and_flux(model, activation_cells)
 
-    op = openmc.deplete.IndependentOperator(openmc.Materials(activation_mats),
-                                            fluxes, micros, normalization_mode='source-rate')
+    op = openmc.deplete.IndependentOperator(
+        activation_mats, fluxes, micros, normalization_mode='source-rate')
 
     timesteps = [1e4, 1e3]
     source_rates = [1.0e12, 0.0]

@@ -1,10 +1,10 @@
+from pathlib import Path
 import openmc
-import openmc.model
 import openmc.deplete
 import numpy as np
 import pandas as pd
 
-openmc.config['chain_file'] = 'chain_fe.xml'
+openmc.config['chain_file'] = Path('chain_fe.xml').resolve()
 
 results_dict = {f'det_{i}': [] for i in range(6)}
 
@@ -61,18 +61,19 @@ for n in range(1, 11):
 
     # Set up mesh for activation
     mesh = openmc.RegularMesh()
-    mesh.lower_left = (-2.5, -2.5, -w)
-    mesh.upper_right = (2.5, 2.5, w)
+    q = 2.5
+    mesh.lower_left = (-q, -q, -w)
+    mesh.upper_right = (q, q, w)
     mesh.dimension = (1, 1, n)
 
     # Get fluxes and microscopic cross sections on mesh
     fluxes, micros = openmc.deplete.get_microxs_and_flux(model, mesh)
 
     # Get homogenized materials
-    activation_mats = mesh.get_homogenized_materials(model)
+    activation_mats = mesh.get_homogenized_materials(model, include_void=False)
 
-    op = openmc.deplete.IndependentOperator(openmc.Materials(activation_mats),
-                                            fluxes, micros, normalization_mode='source-rate')
+    op = openmc.deplete.IndependentOperator(
+        activation_mats, fluxes, micros, normalization_mode='source-rate')
 
     timesteps = [1e4, 1e3]
     source_rates = [1.0e12, 0.0]
@@ -97,7 +98,8 @@ for n in range(1, 11):
         photon_sources.append(source)
 
     # Create mesh source
-    model.settings.source = openmc.MeshSource(mesh, [[photon_sources]])
+    model.settings.source = openmc.MeshSource(
+        mesh, photon_sources, constraints={'domains': activation_cells})
 
     tally = openmc.Tally()
     tally.filters = [openmc.CellFilter(detect_cells)]
