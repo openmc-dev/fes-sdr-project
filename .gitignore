@@ -1,0 +1,8 @@
+*~
+*.pkl
+*.pdf
+*.h5
+*.out
+*.xml
+*.png
+__pycache__/
